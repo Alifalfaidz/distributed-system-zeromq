@@ -1,0 +1,45 @@
+# Tujuh program Python berjalan di tujuh container terpisah.
+services:
+  collector:
+    build: .
+    command: python -u tasks_collector_publisher.py
+
+  sum_subscriber:
+    build: .
+    command: python -u sum_subscriber.py
+    depends_on:
+      - collector
+
+  mut_subscriber:
+    build: .
+    command: python -u mut_subscriber.py
+    depends_on:
+      - collector
+
+  div_subscriber:
+    build: .
+    command: python -u div_subscriber.py
+    depends_on:
+      - collector
+
+  worker1:
+    build: .
+    command: python -u worker_1.py
+    depends_on:
+      - collector
+
+  worker2:
+    build: .
+    command: python -u worker_2.py
+    depends_on:
+      - collector
+
+  distributor:
+    build: .
+    command: python -u tasks_distributor.py
+    depends_on:
+      - worker1
+      - worker2
+      - sum_subscriber
+      - mut_subscriber
+      - div_subscriber
